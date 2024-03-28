@@ -59,7 +59,10 @@ class LinkdropP2P implements ILinkdropP2P {
 
     if (deployment) {
       if (deployment !== 'CBW' && deployment !== 'LD') {
-        throw new ValidationError(errors.invalid_deployment_property())
+        throw new ValidationError(
+          errors.invalid_deployment_property(),
+          'INVALID_DEPLOYMENT_PROPERTY'
+        )
       }
       this.deployment = deployment
     }
@@ -68,12 +71,18 @@ class LinkdropP2P implements ILinkdropP2P {
       this.apiUrl = apiUrl
     }
     if (!baseUrl) {
-      throw new ValidationError(errors.argument_not_provided('baseUrl'))
+      throw new ValidationError(
+        errors.argument_not_provided('baseUrl', String(baseUrl)),
+        'BASE_URL_NOT_PROVIDED'
+      )
     }
     this.baseUrl = baseUrl
 
     if (!getRandomBytes) {
-      throw new ValidationError(errors.argument_not_provided('getRandomBytes'))
+      throw new ValidationError(
+        errors.argument_not_provided('getRandomBytes', String(getRandomBytes)),
+        'GET_RANDOM_BYTES_NOT_PROVIDED'
+      )
     }
     this.getRandomBytes = getRandomBytes
   }
@@ -92,22 +101,37 @@ class LinkdropP2P implements ILinkdropP2P {
     tokenId
   }) => {
     if (!chainId) {
-      throw new ValidationError(errors.argument_not_provided('chainId'))
+      throw new ValidationError(
+        errors.argument_not_provided('chainId', String(chainId)),
+        'CHAIN_ID_NOT_PROVIDED'
+      )
     }
     const apiHost = defineApiHost(chainId, this.apiUrl)
     if (!apiHost) {
-      throw new ValidationError(errors.chain_not_supported())
+      throw new ValidationError(
+        errors.chain_not_supported(),
+        'CHAIN_NOT_SUPPORTED'
+      )
     }
     if (!from) {
-      throw new ValidationError(errors.argument_not_provided('from'))
+      throw new ValidationError(
+        errors.argument_not_provided('from', String(from)),
+        'FROM_NOT_PROVIDED'
+      )
     }
 
     if (tokenType !== 'ERC721' && !amount) {
-      throw new ValidationError(errors.argument_not_provided('amount'))
+      throw new ValidationError(
+        errors.argument_not_provided('amount', String(amount)),
+        'AMOUNT_NOT_PROVIDED'
+      )
     }
 
     if (!token && tokenType !== 'NATIVE') {
-      throw new ValidationError(errors.argument_not_provided('token'))
+      throw new ValidationError(
+        errors.argument_not_provided('token', String(token)),
+        'TOKEN_NOT_PROVIDED'
+      )
     }
 
     return this._initializeClaimLink({
@@ -136,7 +160,10 @@ class LinkdropP2P implements ILinkdropP2P {
   }) => {
     const apiHost = defineApiHost(chainId, this.apiUrl)
     if (!apiHost) {
-      throw new ValidationError(errors.chain_not_supported())
+      throw new ValidationError(
+        errors.chain_not_supported(),
+        'CHAIN_NOT_SUPPORTED'
+      )
     }
     const {
       claim_links,
@@ -204,18 +231,27 @@ class LinkdropP2P implements ILinkdropP2P {
   }) => {
     const apiHost = defineApiHost(chainId, this.apiUrl)
     if (!apiHost) {
-      throw new ValidationError(errors.chain_not_supported())
+      throw new ValidationError(
+        errors.chain_not_supported(),
+        'CHAIN_NOT_SUPPORTED'
+      )
     }
 
     if (tokenType === 'ERC721' || tokenType === 'ERC1155') {
-      throw new ValidationError(errors.limits_disabled_for_erc721_or_erc1155())
+      throw new ValidationError(
+        errors.limits_disabled_for_erc721_or_erc1155(),
+        'LIMITS_NOT_AVAILABLE_FOR_ERC721_AND_ERC1155'
+      )
     }
 
     let tokenAddress = token
 
     if (tokenAddress !== configs.nativeTokenAddress) {
       if (!tokenAddress) {
-        throw new ValidationError(errors.argument_not_provided('token'))
+        throw new ValidationError(
+          errors.argument_not_provided('token', String(token)),
+          'TOKEN_NOT_PROVIDED'
+        )
       }
     }
   
@@ -265,11 +301,17 @@ class LinkdropP2P implements ILinkdropP2P {
         claimLinkData.tokenType === 'NATIVE' || claimLinkData.tokenType === 'ERC20'
       ) {
         if (toBigInt(claimLinkData.amount) < toBigInt(feeData.min_transfer_amount)) {
-          throw new ValidationError(errors.amount_should_be_more_than_minlimit(feeData.min_transfer_amount.toString()))
+          throw new ValidationError(
+            errors.amount_should_be_more_than_minlimit(feeData.min_transfer_amount.toString()),
+            'MIN_LIMIT_FAILED'
+          )
         }
     
         if (toBigInt(claimLinkData.amount) > toBigInt(feeData.max_transfer_amount)) {
-          throw new ValidationError(errors.amount_should_be_less_than_maxlimit(feeData.max_transfer_amount.toString()))
+          throw new ValidationError(
+            errors.amount_should_be_less_than_maxlimit(feeData.max_transfer_amount.toString()),
+            'MAX_LIMIT_FAILED'
+          )
         }
       }
     }
@@ -379,7 +421,10 @@ class LinkdropP2P implements ILinkdropP2P {
       const apiHost = defineApiHost(chainId, this.apiUrl)
 
       if (!apiHost) {
-        throw new ValidationError(errors.chain_not_supported())
+        throw new ValidationError(
+          errors.chain_not_supported(),
+          'CHAIN_NOT_SUPPORTED'
+        )
       }
   
       const claimLinkData = {
@@ -427,7 +472,10 @@ class LinkdropP2P implements ILinkdropP2P {
     const apiHost = defineApiHost(chainId, this.apiUrl)
 
     if (!apiHost) {
-      throw new ValidationError(errors.chain_not_supported())
+      throw new ValidationError(
+        errors.chain_not_supported(),
+        'CHAIN_NOT_SUPPORTED'
+      )
     }
 
     const { claim_link } = await linkApi.getTransferStatus(
@@ -485,7 +533,10 @@ class LinkdropP2P implements ILinkdropP2P {
   }) => {
     const apiHost = customApiHost || defineApiHost(chainId, this.apiUrl)
     if (!apiHost) {
-      throw new ValidationError(errors.chain_not_supported())
+      throw new ValidationError(
+        errors.chain_not_supported(),
+        'CHAIN_NOT_SUPPORTED'
+      )
     }
     if (transferId) {
       const { claim_link } = await linkApi.getTransferStatus(
@@ -584,7 +635,9 @@ class LinkdropP2P implements ILinkdropP2P {
       }
       return this._initializeClaimLink(claimLinkData)
     } else {
-      throw new ValidationError(errors.at_least_one_argument_not_provided(['txHash', 'transferId']))
+      throw new ValidationError(
+        errors.at_least_one_argument_not_provided(['txHash', 'transferId'])
+      )
     }
   }
 }

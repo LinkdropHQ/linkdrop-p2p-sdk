@@ -2,8 +2,8 @@ import { EChains } from '../types'
 
 export default {
   'chain_not_supported': () => `Chain is not supported. Please use ${Object.keys(EChains).filter(item => isNaN(Number(item))).join(', ')}`,
-  'argument_not_provided': (argumentName: string) => `Argument "${argumentName}" is not provided`,
-  'property_not_provided': (propertyName: string) => `Property "${propertyName}" is not provided`,
+  'argument_not_provided': (argumentName: string, currentValue: string) => `Argument "${argumentName}" is not provided (argument="${argumentName}", value="${currentValue}")`,
+  'property_not_provided': (propertyName: string, currentValue: string) => `Property "${propertyName}" is not provided (property="${propertyName}", value="${currentValue}")`,
   'cannot_update_amount': () => `Cannot update amount after deposit`,
   'deploy_with_auth_wrong_type': () => `You can use 'depositWithAuthorization' method only for ERC20 tokens. Use 'deposit' method instead`,
   'not_possible_create_claim_url': () => `Link should have senderSig or sender to be created`,

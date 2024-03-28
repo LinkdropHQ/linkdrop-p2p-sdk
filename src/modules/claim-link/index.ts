@@ -112,7 +112,10 @@ class ClaimLink implements IClaimLinkSDK {
     this.getRandomBytes = getRandomBytes
 
     if (!sender) {
-      throw new ValidationError(errors.argument_not_provided('sender'))
+      throw new ValidationError(
+        errors.argument_not_provided('sender', String(sender)),
+        'SENDER_NOT_PROVIDED'
+      )
     }
 
     this.deployment = deployment
@@ -121,7 +124,10 @@ class ClaimLink implements IClaimLinkSDK {
 
     if (tokenType === 'ERC721' || tokenType === 'ERC1155') {
       if (!tokenId) {
-        throw new ValidationError(errors.argument_not_provided('tokenId'))
+        throw new ValidationError(
+          errors.argument_not_provided('tokenId', String(tokenId)),
+          'TOKEN_ID_NOT_PROVIDED'
+        )
       }
       this.tokenId = tokenId
     }
@@ -141,20 +147,29 @@ class ClaimLink implements IClaimLinkSDK {
       this.feeToken = feeToken.toLowerCase()
     }
     if (tokenType !== 'ERC721' && !amount) {
-      throw new ValidationError(errors.argument_not_provided('amount'))
+      throw new ValidationError(
+        errors.argument_not_provided('amount', String(amount)),
+        'AMOUNT_NOT_PROVIDED'
+      )
     } else {
       this.amount = amount
     }
     this.operations = operations || []
     this.expiration = expiration
     if (!chainId) {
-      throw new ValidationError(errors.argument_not_provided('chainId'))
+      throw new ValidationError(
+        errors.argument_not_provided('chainId', String(chainId)),
+        'CHAIN_ID_NOT_PROVIDED'
+      )
     }
     this.chainId = chainId
     this.apiUrl = apiUrl
     this.#apiKey = apiKey
     if (!tokenType) {
-      throw new ValidationError(errors.argument_not_provided('tokenType'))
+      throw new ValidationError(
+        errors.argument_not_provided('tokenType', String(tokenType)),
+        'TOKEN_TYPE_NOT_PROVIDED'
+      )
     }
     this.tokenType = tokenType
 
@@ -162,7 +177,10 @@ class ClaimLink implements IClaimLinkSDK {
       this.token = configs.nativeTokenAddress
     } else {
       if (!token) {
-        throw new ValidationError(errors.argument_not_provided('token'))
+        throw new ValidationError(
+          errors.argument_not_provided('token', String(token)),
+          'TOKEN_NOT_PROVIDED'
+        )
       }
       this.token = token.toLowerCase()
     }
@@ -194,7 +212,10 @@ class ClaimLink implements IClaimLinkSDK {
 
     
     if (!transferId) {
-      throw new Error(errors.argument_not_provided('transferId'))
+      throw new ValidationError(
+        errors.argument_not_provided('transferId', String(transferId)),
+        'TRANSFER_ID_NOT_PROVIDED'
+      )
     }
 
     this.transferId = transferId.toLowerCase()
@@ -214,7 +235,7 @@ class ClaimLink implements IClaimLinkSDK {
     const iface = new ethers.Interface(LinkdropEscrowToken.abi)
     let data
     if (!this.escrowAddress) {
-      throw new Error(errors.property_not_provided('escrowAddress'))
+      throw new Error(errors.property_not_provided('escrowAddress', String(this.escrowAddress)))
     }
     if (this.tokenType === 'ERC20') {
       data = iface.encodeFunctionData("deposit", [
@@ -271,7 +292,10 @@ class ClaimLink implements IClaimLinkSDK {
 
   redeem: TRedeem = async (dest) => {
     if (!dest) {
-      throw new ValidationError(errors.argument_not_provided('dest'))
+      throw new ValidationError(
+        errors.argument_not_provided('dest', String(dest)),
+        'DESTINATION_ADDRESS_NOT_PROVIDED'
+      )
     }
 
     if (!this.escrowAddress) {
@@ -335,7 +359,7 @@ class ClaimLink implements IClaimLinkSDK {
 
   getStatus: TGetStatus = async () => {
     if (!this.transferId) {
-      throw new Error(errors.property_not_provided('transferId'))
+      throw new Error(errors.property_not_provided('transferId', String(this.transferId)))
     }
 
     const { claim_link } = await linkApi.getTransferStatus(
@@ -629,19 +653,22 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     if (!this.escrowAddress) {
-      throw new Error(errors.property_not_provided('escrowAddress'))
+      throw new Error(errors.property_not_provided('escrowAddress', String(this.escrowAddress)))
     }
 
     if (!this.expiration) {
-      throw new Error(errors.property_not_provided('expiration'))
+      throw new Error(errors.property_not_provided('expiration', String(this.expiration)))
     }
 
     if (!this.amount) {
-      throw new Error(errors.property_not_provided('amount'))
+      throw new Error(errors.property_not_provided('amount', String(this.amount)))
     }
 
     if (!sendTransaction) {
-      throw new ValidationError(errors.argument_not_provided('sendTransaction'))
+      throw new ValidationError(
+        errors.argument_not_provided('sendTransaction', String(sendTransaction)),
+        'SEND_TRANSACTION_NOT_PROVIDED'
+      )
     }
 
     if (this.tokenType === 'NATIVE') {
@@ -679,7 +706,10 @@ class ClaimLink implements IClaimLinkSDK {
     const authSelector = configs.supportedStableCoins[this.token]
 
     if (!authSelector) {
-      throw new ValidationError(errors.stable_token_not_supported(this.token))
+      throw new ValidationError(
+        errors.stable_token_not_supported(this.token),
+        'TOKEN_NOT_SUPPORTED_FOR_DEPOSIT_WITH_AUTH'
+      )
     }
 
     if (!this.linkKey) {
@@ -691,7 +721,10 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     if (!signTypedData) {
-      throw new ValidationError(errors.argument_not_provided('signTypedData'))
+      throw new ValidationError(
+        errors.argument_not_provided('signTypedData', String(signTypedData)),
+        'SIGN_TYPED_DATA_NOT_PROVIDED'
+      )
     }
 
     if (this.tokenType === 'NATIVE') {
@@ -705,14 +738,14 @@ class ClaimLink implements IClaimLinkSDK {
 
     const [validAfter, validBefore] = getValidAfterAndValidBefore()
     if (!this.escrowAddress) {
-      throw new Error(errors.property_not_provided('escrowAddress'))
+      throw new Error(errors.property_not_provided('escrowAddress', String(this.escrowAddress)))
     }
 
     if (!this.expiration) {
-      throw new Error(errors.property_not_provided('expiration'))
+      throw new Error(errors.property_not_provided('expiration', String(this.expiration)))
     }
     if (!this.amount) {
-      throw new Error(errors.property_not_provided('amount'))
+      throw new Error(errors.property_not_provided('amount', String(this.amount)))
     }
 
     const authResult = await getDepositAuthorization(
@@ -796,7 +829,10 @@ class ClaimLink implements IClaimLinkSDK {
       throw new Error(errors.link_only_for_claim())
     }
     if (this.tokenType === 'ERC721') {
-      throw new ValidationError(errors.cannot_update_amount_for_erc721())
+      throw new ValidationError(
+        errors.cannot_update_amount_for_erc721(),
+        'CANNOT_UPDATE_AMOUNT_FOR_ERC721'
+      )
     }
     const {
       fee_amount: feeAmount,
@@ -810,11 +846,17 @@ class ClaimLink implements IClaimLinkSDK {
     )
 
     if (toBigInt(amount) < toBigInt(minTransferAmount)) {
-      throw new ValidationError(errors.amount_should_be_more_than_minlimit(minTransferAmount.toString()))
+      throw new ValidationError(
+        errors.amount_should_be_more_than_minlimit(minTransferAmount.toString()),
+        'MIN_LIMIT_FAILED'
+      )
     }
 
     if (toBigInt(amount) > toBigInt(maxTransferAmount)) {
-      throw new ValidationError(errors.amount_should_be_less_than_maxlimit(maxTransferAmount.toString()))
+      throw new ValidationError(
+        errors.amount_should_be_less_than_maxlimit(maxTransferAmount.toString()),
+        'MAX_LIMIT_FAILED'
+      )
     }
 
     if (!this.linkKey) {
@@ -885,15 +927,18 @@ class ClaimLink implements IClaimLinkSDK {
       throw new Error(errors.link_only_for_claim())
     }
     if (!this.getRandomBytes) {
-      throw new Error(errors.property_not_provided('getRandomBytes'))
+      throw new Error(errors.property_not_provided('getRandomBytes', String(this.getRandomBytes)))
     }
 
     if (!signTypedData) {
-      throw new ValidationError(errors.argument_not_provided('signTypedData'))
+      throw new ValidationError(
+        errors.argument_not_provided('signTypedData', String(signTypedData)),
+        'SIGN_TYPED_DATA_NOT_PROVIDED'
+      )
     }
 
     if (!this.transferId) {
-      throw new Error(errors.property_not_provided('transferId'))
+      throw new Error(errors.property_not_provided('transferId', String(this.transferId)))
     }
 
     const escrowPaymentDomain = this._getEscrowPaymentDomain()

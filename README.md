@@ -192,3 +192,26 @@ const {
   to,
 } = claimLink.getDepositParams()
 ```
+
+
+## Error types
+- SENDER_NOT_PROVIDED - argument "sender" is not provided to constructor
+- TOKEN_ID_NOT_PROVIDED - argument "tokenId" is not provided to constructor
+- AMOUNT_NOT_PROVIDED - argument "amount" is not provided to method or constructor
+- TOKEN_TYPE_NOT_PROVIDED - argument "tokenType" is not provided to constructor
+- TOKEN_NOT_PROVIDED - argument "token" is not provided to method or constructor
+- TRANSFER_ID_NOT_PROVIDED - argument "transferId" is not provided to constructor
+- SEND_TRANSACTION_NOT_PROVIDED - function "sendTransaction" is not provided to method
+- TOKEN_NOT_SUPPORTED_FOR_DEPOSIT_WITH_AUTH - current stablecoin is not supported
+- SIGN_TYPED_DATA_NOT_PROVIDED - function "signTypedData" is not provided to method
+- CANNOT_UPDATE_AMOUNT_FOR_ERC721 - you cannot specify the number of tokens for ERC721
+- MIN_LIMIT_FAILED - you cannot specify the number of tokens less than the lower limit
+- MAX_LIMIT_FAILED - you cannot specify the number of tokens greater than the upper limit
+- INVALID_DEPLOYMENT_PROPERTY - you cannot specify a deployment other than CBW or LD
+- BASE_URL_NOT_PROVIDED - argument "baseUrl" is not provided to constructor
+- GET_RANDOM_BYTES_NOT_PROVIDED - function "signTypedData" is not provided to constructor
+- CHAIN_ID_NOT_PROVIDED - argument "chainId" is not provided to constructor or method
+- CHAIN_NOT_SUPPORTED - current chain is not supported. Supported chains: 137, 80001, 8453, 84531, 43114, 10, 42161, 100
+- FROM_NOT_PROVIDED - argument "from" is not provided to method
+- LIMITS_NOT_AVAILABLE_FOR_ERC721_AND_ERC1155 - limits are not available for ERC721 and ERC1155 tokens
+
