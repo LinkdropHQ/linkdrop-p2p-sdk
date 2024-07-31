@@ -1,7 +1,21 @@
 # Linkdrop P2P SDK
 
+
+## 3.12.3-beta
+- support for EURC coin (base network)
+
+## 3.12.2-beta
+- support for v3 links
+
+## 3.12.1-beta
+- bug fix for old escrow contract links
+
+## 3.12.0-beta
+- new escrow contract addresses for CBW users
+
 ## 3.11.0-beta
 - bug fixes for ERC1155/ERC721
+- added signature length query variable for recovered link
 
 ## 3.10.0-beta
 - update for getLimits method (usd limits added)

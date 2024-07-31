@@ -17,6 +17,13 @@ const defineEscrowAddress: TDefineEscrowAddress = (
   }
 
   if (deployment === 'CBW') {
+    if (tokenType === 'ERC1155' || tokenType === 'ERC721') {
+      const escrow = configs.cbwEscrowContractNFT
+      if (!escrow) {
+        return null
+      }
+      return escrow
+    }
     const escrow = configs.cbwEscrowContract
     if (!escrow) {
       return null

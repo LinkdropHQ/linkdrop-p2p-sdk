@@ -37,7 +37,8 @@ import {
   THistoryItem
 } from '../../types'
 import * as configs from '../../configs'
-import * as LinkdropP2P2 from 'linkdrop-p2p-sdk2'
+import * as LinkdropP2PV2 from 'linkdrop-p2p-sdk2'
+import * as LinkdropP2PV3_11 from 'linkdrop-p2p-sdk3.11.0-beta'
 
 
 class LinkdropP2P implements ILinkdropP2P {
@@ -463,7 +464,7 @@ class LinkdropP2P implements ILinkdropP2P {
     const version = this.getVersionFromClaimUrl(claimUrl)
 
     if (version === '2') {
-      const linkdropP2P2 = new LinkdropP2P2.LinkdropP2P({
+      const linkdropP2P2 = new LinkdropP2PV2.LinkdropP2P({
         baseUrl: this.baseUrl,
         apiKey: String(this.#apiKey)
       })
@@ -500,6 +501,19 @@ class LinkdropP2P implements ILinkdropP2P {
       token_id,
       status
     } = claim_link
+
+    const actualVersion = defineVersionByEscrow(escrow) 
+
+    if (actualVersion === '3') {
+      const linkdropP2P3 = new LinkdropP2PV3_11.LinkdropP2P({
+        baseUrl: this.baseUrl,
+        apiKey: String(this.#apiKey),
+        deployment: this.deployment,
+        getRandomBytes: this.getRandomBytes
+      })
+
+      return await linkdropP2P3.getClaimLink(claimUrl)
+    }
 
     const claimLinkData = {
       token: token as ETokenAddress,
@@ -558,7 +572,8 @@ class LinkdropP2P implements ILinkdropP2P {
         total_amount,
         sender,
         status,
-        token_id
+        token_id,
+        escrow
       } = claim_link
 
       const claimLinkData = {
@@ -577,10 +592,12 @@ class LinkdropP2P implements ILinkdropP2P {
         feeToken: fee_token,
         totalAmount: total_amount as string,
         status,
+        escrowAddress: escrow,
         tokenId: token_id,
         source: (customApiHost ? 'd' : 'p2p') as TClaimLinkSource,
         deployment: this.deployment
       }
+
       return this._initializeClaimLink(claimLinkData)
     } else if (txHash) {
       
@@ -603,7 +620,8 @@ class LinkdropP2P implements ILinkdropP2P {
         total_amount,
         version,
         status,
-        token_id
+        token_id,
+        escrow
       } = claim_link
 
       const claimLinkData = {
@@ -623,15 +641,28 @@ class LinkdropP2P implements ILinkdropP2P {
         tokenId: token_id,
         totalAmount: total_amount as string,
         status,
+        escrow,
         source: 'p2p' as TClaimLinkSource,
         deployment: this.deployment
       }
 
-      if (version.toString() === '2') {
-        const linkdropP2P2 = new LinkdropP2P2.LinkdropP2P({
+      if (defineVersionByEscrow(escrow) === '2') {
+        const linkdropP2P2 = new LinkdropP2PV2.LinkdropP2P({
           baseUrl: this.baseUrl,
           apiKey: String(this.#apiKey),
           getRandomBytes: this.getRandomBytes
+        })
+  
+        return await linkdropP2P2.retrieveClaimLink({
+          txHash,
+          chainId
+        })
+      } else if (defineVersionByEscrow(escrow) === '3') {
+        const linkdropP2P2 = new LinkdropP2PV3_11.LinkdropP2P({
+          baseUrl: this.baseUrl,
+          apiKey: String(this.#apiKey),
+          getRandomBytes: this.getRandomBytes,
+          deployment: this.deployment
         })
   
         return await linkdropP2P2.retrieveClaimLink({

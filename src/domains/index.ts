@@ -6,9 +6,11 @@ import arbitrumUSDC from "./arbitrum-usdc"
 import baseGoerliUSDC from "./base-goerli-usdc"
 import baseUSDC from "./base-usdc"
 import sepoliaUSDC from "./sepolia-usdc"
+import baseEURC from "./base-eurc"
 
 export {
   polygonUSDC,
+  baseEURC,
   polygonUSDCBridged,
   optimismUSDC,
   avalancheUSDC,
