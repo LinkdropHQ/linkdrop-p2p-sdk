@@ -10,7 +10,8 @@ import {
   baseGoerliUSDC,
   baseUSDC,
   sepoliaUSDC,
-  baseEURC
+  baseEURC,
+  baseCBBTC
 } from '../domains'
 
 type TDefineDomain = (
@@ -52,6 +53,7 @@ const defineDomain: TDefineDomain = (
   if (chainId === EChains.base) { // Base
     if (tokenAddress === ETokenAddress.usdcBase) return baseUSDC
     if (tokenAddress === ETokenAddress.eurcBase) return baseEURC
+    if (tokenAddress === ETokenAddress.cbBTC) return baseCBBTC
   }
 
   return null

@@ -25,7 +25,9 @@ import {
   TGetRandomBytes,
   TClaimLinkItemStatus,
   TClaimLinkSource,
-  TDeploymentType
+  TDeploymentType,
+  ESelectors,
+  TDomain
 } from '../../types'
 import { ValidationError } from '../../errors'
 import { LinkdropEscrowToken, LinkdropEscrowNFT } from '../../abi'
@@ -44,7 +46,8 @@ import {
   updateOperations,
   defineDomain,
   defineVersionByEscrow,
-  getClaimCodeFromDashboardLink
+  getClaimCodeFromDashboardLink,
+  defineSelector
 } from '../../helpers'
 import { errors } from '../../texts'
 import * as configs from '../../configs'
@@ -209,10 +212,10 @@ class ClaimLink implements IClaimLinkSDK {
         this.chainId
       )) {
         throw new Error(errors.escrow_is_not_correct())
-      }  
+      }
     }
 
-    
+
     if (!transferId) {
       throw new ValidationError(
         errors.argument_not_provided('transferId', String(transferId)),
@@ -280,7 +283,7 @@ class ClaimLink implements IClaimLinkSDK {
         this.feeAuthorization
       ])
     }
- 
+
     const value = this._defineValue(
       this.token,
       this.feeToken,
@@ -315,7 +318,7 @@ class ClaimLink implements IClaimLinkSDK {
     if (!this.claimUrl) {
       throw new Error(errors.cannot_redeem_before_deposit())
     }
-  
+
     if (this.source === 'd') {
       const claimCode = getClaimCodeFromDashboardLink(this.claimUrl)
       const linkKey = ethers.id(claimCode)
@@ -393,7 +396,7 @@ class ClaimLink implements IClaimLinkSDK {
   _defineDomain: TDefineDomain = () => {
     return defineDomain(this.chainId, this.token)
   }
-  
+
   _defineValue: TDefineValue = (
     tokenAddress,
     feeToken,
@@ -408,7 +411,7 @@ class ClaimLink implements IClaimLinkSDK {
       // native token
       return totalAmount
     }
-  
+
     // erc20
     return feeAmount
   }
@@ -421,7 +424,7 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     const { data, value, to } = this.getDepositParams()
-    
+
     const { hash: txHash } = await sendTransaction({
       data,
       value,
@@ -479,7 +482,7 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     const { data, value, to } = this.getDepositParams()
-    
+
     const { hash: txHash } = await sendTransaction({
       data,
       value,
@@ -595,7 +598,7 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     const { data, value, to } = this.getDepositParams()
-    
+
     const { hash: txHash } = await sendTransaction({
       data,
       value,
@@ -695,7 +698,7 @@ class ClaimLink implements IClaimLinkSDK {
       return this._depositERC1155({
         sendTransaction
       })
-    } 
+    }
   }
 
   isDepositWithAuthorizationAvailable: TIsDepositWithAuthorizationAvailable = (
@@ -706,12 +709,33 @@ class ClaimLink implements IClaimLinkSDK {
   }
 
   depositWithAuthorization: TDepositWithAuthorization = async ({
-    signTypedData
+    signTypedData,
+    authConfig
   }) => {
     if (this.forRecipient) {
       throw new Error(errors.link_only_for_claim())
     }
-    const authSelector = configs.supportedStableCoins[this.token]
+
+    let authSelector: ESelectors
+    let domain: TDomain | null
+
+    if (!authConfig) {
+      // if there is no authConfig, then define authSelector with configs.supportedStableCoins,
+      // and domain with private method of class accroding to chain and token address
+      authSelector = configs.supportedStableCoins[this.token]
+      domain = this._defineDomain()
+    } else {
+      // otherwise take domain from authConfig
+      // and authSelector from helper according to authConfig.authorizationMethod
+      domain = authConfig.domain
+      authSelector = defineSelector(
+        authConfig.authorizationMethod
+      )
+    }
+
+    if (!domain) {
+      throw new Error(errors.chain_not_supported())
+    }
 
     if (!authSelector) {
       throw new ValidationError(
@@ -736,12 +760,7 @@ class ClaimLink implements IClaimLinkSDK {
     }
 
     if (this.tokenType === 'NATIVE') {
-      throw new Error(errors.deploy_with_auth_wrong_type())
-    }
-
-    const domain = this._defineDomain()
-    if (!domain) {
-      throw new Error(errors.chain_not_supported())
+      throw new Error(errors.deposit_with_auth_wrong_type())
     }
 
     const [validAfter, validBefore] = getValidAfterAndValidBefore()
@@ -757,6 +776,7 @@ class ClaimLink implements IClaimLinkSDK {
       throw new Error(errors.property_not_provided('amount', String(this.amount)))
     }
 
+
     const authResult = await getDepositAuthorization(
       signTypedData,
       this.sender.toLowerCase(),
@@ -769,7 +789,12 @@ class ClaimLink implements IClaimLinkSDK {
       domain,
       this.chainId,
       this.token,
-      this.feeAmount
+      this.feeAmount,
+      authSelector,
+
+      // if last param exists, then return needed type of authorization
+      // otherwise define it dynamically with chain and token
+      authConfig?.authorizationMethod
     )
 
     const result = await linkApi.depositWithAuthorization(
@@ -829,7 +854,7 @@ class ClaimLink implements IClaimLinkSDK {
       newAmount,
       this.tokenId
     )
-  
+
     return result
   }
 

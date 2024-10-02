@@ -1,13 +1,7 @@
 
-import { TDomain, TSignTypedData, ETokenAddress } from '../../types'
-import getDepositAuthorizationBase from './get-deposit-authorization-base'
-import getDepositAuthorizationPolygonBridgedUSDC from './get-deposit-authorization-polygon-bridged-usdc'
-import getDepositAuthorizationPolygonNativeUSDC from './get-deposit-authorization-polygon-native-usdc'
-import getDepositAuthorizationSepolia from './get-deposit-authorization-sepolia'
-
-import getDepositAuthorizationArbitrum from './get-deposit-authorization-arbitrum'
-import getDepositAuthorizationAvalanche from './get-deposit-authorization-avalanche'
-import getDepositAuthorizationOptimism from './get-deposit-authorization-optimism'
+import { TDomain, TSignTypedData, ETokenAddress, TAuthorizationMethod } from '../../types'
+import getDepositAuthorizationApprove from './get-deposit-authorization-approve'
+import getDepositAuthorizationReceive from './get-deposit-authorization-receive'
 import { EChains } from '../../types'
 
 async function getDepositAuthorization(
@@ -22,11 +16,13 @@ async function getDepositAuthorization(
   domain: TDomain,
   chainId: number,
   token: string,
-  feeAmount: string
+  feeAmount: string,
+  authSelector: string,
+  authorizationMethod?: TAuthorizationMethod
 ) {
-  if (chainId === EChains.polygon) {
-    if (token === ETokenAddress.usdcBridgedPolygon) {
-      return getDepositAuthorizationPolygonBridgedUSDC(
+  if (authorizationMethod) {
+    if (authorizationMethod === 'ApproveWithAuthorization') {
+      return getDepositAuthorizationApprove(
         signTypedData,
         sender,
         to,
@@ -39,8 +35,7 @@ async function getDepositAuthorization(
         domain
       )
     }
-
-    return getDepositAuthorizationPolygonNativeUSDC(
+    return getDepositAuthorizationReceive(
       signTypedData,
       sender,
       to,
@@ -50,73 +45,29 @@ async function getDepositAuthorization(
       transferId,
       expiration,
       feeAmount,
-      domain
-    )
-    
-  }
-
-  if (chainId === EChains.base || chainId === EChains.baseGoerli) {
-    return getDepositAuthorizationBase(
-      signTypedData,
-      sender,
-      to,
-      amount,
-      validAfter,
-      validBefore,
-      transferId,
-      expiration,
-      feeAmount,
-      domain
+      domain,
+      authSelector
     )
   }
 
-  if (chainId === EChains.avalanche) {
-    return getDepositAuthorizationAvalanche(
-      signTypedData,
-      sender,
-      to,
-      amount,
-      validAfter,
-      validBefore,
-      transferId,
-      expiration,
-      feeAmount,
-      domain
-    )
+  if (chainId === EChains.polygon) {
+    if (token === ETokenAddress.usdcBridgedPolygon) {
+      return getDepositAuthorizationApprove(
+        signTypedData,
+        sender,
+        to,
+        amount,
+        validAfter,
+        validBefore,
+        transferId,
+        expiration,
+        feeAmount,
+        domain
+      )
+    }
   }
 
-  if (chainId === EChains.optimism) {
-    return getDepositAuthorizationOptimism(
-      signTypedData,
-      sender,
-      to,
-      amount,
-      validAfter,
-      validBefore,
-      transferId,
-      expiration,
-      feeAmount,
-      domain
-    )
-  }
-
-  if (chainId === EChains.arbitrum) {
-    return getDepositAuthorizationArbitrum(
-      signTypedData,
-      sender,
-      to,
-      amount,
-      validAfter,
-      validBefore,
-      transferId,
-      expiration,
-      feeAmount,
-      domain
-    )
-  }
-
-  // sepolia default
-  return getDepositAuthorizationSepolia(
+  return getDepositAuthorizationReceive(
     signTypedData,
     sender,
     to,
@@ -126,7 +77,8 @@ async function getDepositAuthorization(
     transferId,
     expiration,
     feeAmount,
-    domain
+    domain,
+    authSelector
   )
 }
 

@@ -7,6 +7,9 @@ export enum ETokenAddress {
   usdcSepolia = '0x1c7d4b196cb0c7b01d743fbc6116a902379c7238',
   usdcArbitrum = '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
   usdcOptimism = '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-  usdcAvalanche = '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e'
+
+
+  usdcAvalanche = '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
+  cbBTC = '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf'
 }
 

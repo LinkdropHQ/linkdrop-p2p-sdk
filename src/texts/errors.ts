@@ -5,7 +5,7 @@ export default {
   'argument_not_provided': (argumentName: string, currentValue: string) => `Argument "${argumentName}" is not provided (argument="${argumentName}", value="${currentValue}")`,
   'property_not_provided': (propertyName: string, currentValue: string) => `Property "${propertyName}" is not provided (property="${propertyName}", value="${currentValue}")`,
   'cannot_update_amount': () => `Cannot update amount after deposit`,
-  'deploy_with_auth_wrong_type': () => `You can use 'depositWithAuthorization' method only for ERC20 tokens. Use 'deposit' method instead`,
+  'deposit_with_auth_wrong_type': () => `You can use 'depositWithAuthorization' method only for ERC20 tokens. Use 'deposit' method instead`,
   'not_possible_create_claim_url': () => `Link should have senderSig or sender to be created`,
   'cannot_redeem_before_deposit': () => `Tokens should be deposited before redeem`,
 
@@ -29,7 +29,7 @@ export default {
   ) => `Variable "${variableName}" is not valid. Expected value type: ${expectedValueType}. Current value: ${currentValue}`,
   'stable_token_not_supported': (
     address: string
-  ) => `Stable coin with address not supported for deployWithAuthorization method`,
+  ) => `Stablecoin with address not supported for depositWithAuthorization method`,
   'cannot_update_amount_for_erc721': () => `Cannot update amount for ERC721 token`,
   'limits_disabled_for_erc721_or_erc1155': () => `Cannot fetch limits for ERC1155 or ERC721 tokens`,
   'link_only_for_claim': () => 'This link can only be redeemed',

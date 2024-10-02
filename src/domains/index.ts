@@ -7,10 +7,12 @@ import baseGoerliUSDC from "./base-goerli-usdc"
 import baseUSDC from "./base-usdc"
 import sepoliaUSDC from "./sepolia-usdc"
 import baseEURC from "./base-eurc"
+import baseCBBTC from "./base-cbbtc"
 
 export {
   polygonUSDC,
   baseEURC,
+  baseCBBTC,
   polygonUSDCBridged,
   optimismUSDC,
   avalancheUSDC,

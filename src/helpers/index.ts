@@ -4,7 +4,6 @@ import decodeLink from './decode-link'
 import defineApiHost from './define-api-host'
 import parseLink from './parse-link'
 import defineEscrowAddress from './define-escrow-address'
-import defineTokenSymbol from './define-token-symbol'
 import defineIfEscrowAddressIsCorrect from './define-if-escrow-address-is-correct'
 import createQueryString from './create-query-string'
 import updateOperations from './update-operations'
@@ -19,9 +18,11 @@ import getChainIdFromDashboardLink from './get-chain-id-from-dashboard-link'
 import defineDashboardApiHost from './define-dashboard-api-host'
 import defineVersionByEscrow from './define-version-by-escrow'
 import checkApiKeyFormatValidity from './check-api-key-format-validity'
+import defineSelector from './define-selector'
 
 export {
   defineDomain,
+  defineSelector,
   getClaimCodeFromDashboardLink,
   getChainIdFromDashboardLink,
   defineDashboardApiHost,
@@ -35,7 +36,6 @@ export {
   parseQueryParams,
   createQueryString,
   defineIfEscrowAddressIsCorrect,
-  defineTokenSymbol,
   defineNetworkName,
   defineApiHost,
   encodeLink,

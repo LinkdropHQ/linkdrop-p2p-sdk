@@ -113,8 +113,29 @@ const {
 **2a. Deposit USDC tokens to escrow contract via EIP-3009 (transferWithAuthorization) :**  
 To avoid asking for sender private key directly, we ask to pass a function that generates a EIP712 signature using Sender's private key. The function should be similar to ethers `signer.signTypedData` - https://docs.ethers.org/v6/api/providers/#Signer-signTypedData
 ```js
+
 const signTypedData = (domain, types, message) => signer.signTypedData(domain, types, message)
-const { claimUrl, transferId, txHash } = await claimLink.depositWithAuthorization({ signTypedData }) 
+
+
+// authConfig is optional. Use it if you need to define domain and method of authorization
+const authConfig = {
+  domain: { 
+    // required params
+    name,
+    version,
+    verifyingContract,
+
+    // optional params
+    chainId,
+    salt
+  },
+  authorizationMethod // "ApproveWithAuthorization" || "ReceiveWithAuthorization"
+}
+
+const { claimUrl, transferId, txHash } = await claimLink.depositWithAuthorization({
+  signTypedData,
+  authConfig
+}) 
 ```
 
 **2b. Deposit native tokens (ETH/MATIC), ERC721, ERC1155 or ERC20 tokens to escrow contract via direct call :**  

@@ -21,9 +21,11 @@ import type {
 import type { TOperationStatus } from './operation-status'
 import type { TClaimLinkOperation } from './claim-link-operation'
 import type { TDeploymentType } from './deployment-type'
+import type { TAuthorizationMethod } from './authorization-method'
 
 export {
   TTokenType,
+  TAuthorizationMethod,
   ESelectors,
   TDeploymentType,
   TClaimLinkOperation,
